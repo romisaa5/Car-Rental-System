@@ -15,7 +15,8 @@ class Car {
 
 class Customer {
   final String name;
-  final String phone; 
+  final String phone;
+
   Customer(this.name, this.phone);
 
   void displayInfoCustomer() {
@@ -32,7 +33,10 @@ class Booking {
   double totalPrice;
 
   Booking(this.bookId, this.customer, this.car, this.isPaid, this.days)
-      : totalPrice = days * car.priceForDay; 
+      : totalPrice = days * car.priceForDay {
+    car.isAvailable = false; 
+  }
+
   void completePayment() {
     if (!isPaid) {
       isPaid = true;
@@ -42,36 +46,52 @@ class Booking {
       print("Payment already completed.");
     }
   }
+
+  void cancelBooking() {
+    if (!isPaid) {
+      car.isAvailable = true; 
+      print("Booking ID: $bookId has been canceled. Car is now available.");
+    } else {
+      print("Cannot cancel a paid booking.");
+    }
+  }
 }
 
 class Admin {
-  List<Car> cars = [];
+  Map<int, Car> cars = {};
 
   void addCar(Car car) {
-    cars.add(car);
+    cars[car.id] = car;
     print("Car added: ${car.brand} ${car.model}");
+  }
+
+  void removeCar(int carId) {
+    if (cars.containsKey(carId)) {
+      cars.remove(carId);
+      print("Car ID: $carId has been removed.");
+    } else {
+      print("Car ID: $carId not found.");
+    }
   }
 
   void displayAvailableCars() {
     print("\nAvailable Cars:");
-    for (var car in cars) {
-      if (car.isAvailable) {
-        car.displayInfo();
-      }
-    }
+    cars.values.where((car) => car.isAvailable).forEach((car) => car.displayInfo());
   }
 
   void displayAllCars() {
     print("\nAll Cars:");
-    for (var car in cars) {
-      car.displayInfo();
-    }
+    cars.values.forEach((car) => car.displayInfo());
+  }
+
+  Car? searchCarById(int carId) {
+    return cars[carId];
   }
 }
 
 void main() {
   var car1 = Car("Model S", "Tesla", 101, 150.0, true);
-  var car2 = Car("Corolla", "Toyota", 102, 80.0, false);
+  var car2 = Car("Corolla", "Toyota", 102, 80.0, true); 
 
   var customer1 = Customer("John Doe", "0123456789");
 
@@ -84,4 +104,21 @@ void main() {
 
   var booking1 = Booking(1, customer1, car1, false, 3);
   booking1.completePayment();
+
+
+  var foundCar = admin.searchCarById(101);
+  if (foundCar != null) {
+    print("\nCar Found:");
+    foundCar.displayInfo();
+  } else {
+    print("\nCar not found.");
+  }
+
+  admin.removeCar(102);
+  admin.displayAllCars();
+
+
+  var booking2 = Booking(2, customer1, car2, false, 2);
+  booking2.cancelBooking();
+  admin.displayAvailableCars();
 }
