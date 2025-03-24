@@ -9,7 +9,7 @@ class Car {
 
   void displayInfo() {
     print(
-        "Car's Brand: $brand, Model: $model, ID: $id, Price per Day: \$${priceForDay.toStringAsFixed(2)}, Available: $isAvailable");
+        "Car's Brand:$brand, Model: $model, ID: $id, Price per Day: \$${priceForDay.toStringAsFixed(2)}, Available: $isAvailable");
   }
 }
 
